@@ -1,0 +1,35 @@
+name: "build and test"
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Use node.js 16.x
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16
+
+    - name: Run tests.
+      run: |
+        npm install
+        npm run test
+
+    - name: Build
+      run: |
+        npm run dist
+
+    - name: Check commit clean
+      run: |
+        test -z "$(git status --porcelain)" || (git status; git diff; false)
